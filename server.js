@@ -104,10 +104,12 @@ app.post("/api/repo", function(req, res) {
 // Functions
 // =============================================================
 function compareDiff(){
+  var lowestSum = 50;
   //for each friend
   for(var i = 0; i < list.length; i++) {
     var diffArray = [];
     var sum = 0;
+    
 
     console.log("firends list: ", list[i].scores);
     console.log("user scores: ", user[0].scores);
@@ -120,17 +122,32 @@ function compareDiff(){
     console.log("diffArray: ", diffArray);
     //sum diffArray
     sum = diffArray.reduce(add, 0);
+    console.log("lowestSum", lowestSum);
+    console.log("sum", sum);
+    // if(sum < lowestSum){
 
+    // }
+    
   }
   //make code that saves smallest summed object and replaces if someone else is closer to zero 
   //if sum < lowestSum
     //take the friends info and store it in the object
+    lowestSum = checkLowest(sum, lowestSum);
+    console.log("lowestSum", lowestSum);
+    return lowestSum;
 }
 
 function add(a, b) {
   return a + b;
 }
 
+function checkLowest(a, b){
+  if(a < b) {
+    return a;
+  }else {
+    return b;
+  }
+}
 // Starts the server to begin listening
 // =============================================================
 app.listen(PORT, function() {
