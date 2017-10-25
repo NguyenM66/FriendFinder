@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 // Friends (DATA)
 // =============================================================
 var user  = [];
+var match = [];
 
 //store closest frien here, using map to rewirte the new info?
 var topFriend = [];
@@ -24,7 +25,7 @@ var list = [
   {
     name: "Monica",
     photo: "https://",
-    scores: [5, 1, 4, 4, 5, 3, 3, 4, 2, 4]
+    scores: [5, 3, 4, 4, 5, 3, 3, 4, 2, 4]
   },
   {
     name: "Billy",
@@ -81,12 +82,20 @@ app.get("/api/list", function(req, res) {
 });
 
 app.get("/api/repo", function(req, res) {
+  res.json("https://github.com/NguyenM66/FriendFinder");
+});
+
+app.get("/api/match", function(req, res) {
+  res.json(match);
+});
+
+app.get("/api/user", function(req, res) {
   res.json(user);
 });
 
 
 // Create New Table - takes in JSON input
-app.post("/api/repo", function(req, res) {
+app.post("/api/match", function(req, res) {
   // req.body hosts is equal to the JSON post sent from the user
   // This works because of our body-parser middleware
   var newList = req.body;
@@ -95,57 +104,70 @@ app.post("/api/repo", function(req, res) {
   newList.scores = newList.scores.map(function(score){
     return parseInt(score)
   })
+
   user.push(newList);
  //console.log("newList ", newList.scores);
-  res.json(newList);
-  compareDiff();
+  //res.json(newList);
+
+
+  var newFriend = compareDiff();
+  console.log("new friend: ", newFriend);
+  match.push(newFriend);
+  res.json(newFriend);
 });
 
 // Functions
 // =============================================================
 function compareDiff(){
-  var lowestSum = 50;
+  var closestFriend = [50, 0];
+  var lowestSum = closestFriend[0];
+  var topFriend = closestFriend[1];
+  var friendObj = {};
+
   //for each friend
   for(var i = 0; i < list.length; i++) {
     var diffArray = [];
     var sum = 0;
     
 
-    console.log("firends list: ", list[i].scores);
-    console.log("user scores: ", user[0].scores);
+    //console.log("firends list: ", list[i].scores);
+    //console.log("user scores: ", user[0].scores);
     //for each score[i] in each array
     for(var j = 0; j < list[i].scores.length; j++){
       //take absolute value diff
       var diff = Math.abs(user[0].scores[j] - list[i].scores[j]);
       diffArray.push(diff);
     }
-    console.log("diffArray: ", diffArray);
+    //console.log("diffArray: ", diffArray);
     //sum diffArray
     sum = diffArray.reduce(add, 0);
-    console.log("lowestSum", lowestSum);
-    console.log("sum", sum);
-    // if(sum < lowestSum){
+   // console.log("sum", sum);
 
-    // }
-    
+    //if it is the lowest sum then store friend as well
+    closestFriend = checkLowest(sum, lowestSum, topFriend, i);
+    lowestSum = closestFriend[0];
+    topFriend = closestFriend[1];
+    //console.log("closestFriend", closestFriend);
+    //console.log("lowestSum: ", lowestSum);
+    //console.log("topFriend: ", topFriend);
+
+    friendObj = list[topFriend];
+    //console.log("friendObj: ", friendObj);
   }
-  //make code that saves smallest summed object and replaces if someone else is closer to zero 
-  //if sum < lowestSum
-    //take the friends info and store it in the object
-    lowestSum = checkLowest(sum, lowestSum);
-    console.log("lowestSum", lowestSum);
-    return lowestSum;
+    
+    return friendObj;
+
 }
 
 function add(a, b) {
   return a + b;
 }
 
-function checkLowest(a, b){
+function checkLowest(a, b, topfriend, index){
   if(a < b) {
-    return a;
+    return [a, index];
   }else {
-    return b;
+    return [b, topfriend];
   }
 }
 // Starts the server to begin listening

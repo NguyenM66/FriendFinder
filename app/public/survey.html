@@ -210,6 +210,7 @@
       console.log("clicked submit");
 
     //   for each qeustion push slected option to score
+
       var userData = {
         name: $("#name").val(),
         photo: $("#photo").val(),
@@ -217,13 +218,13 @@
         
       }
       var currentURL = window.location.origin;
-      $.post(currentURL + "/api/repo", userData, function(data) {
+      $.post(currentURL + "/api/match", userData, function(data) {
         console.log(userData);
         $("#matchName").text(data.name);
         $('#matchImg').attr("src", data.photo);
         $("#resultsModal").modal('toggle');
         //alert("Adding Table...");
-      },"json");
+      },);
     });
 
     
